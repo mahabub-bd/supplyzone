@@ -1,0 +1,66 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { RootState } from "../store";
+import { baseUrl } from "../utlis";
+
+export const apiSlice = createApi({
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: baseUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      return headers;
+    },
+  }),
+  tagTypes: [
+    "Users",
+    "Roles",
+    "Permissions",
+    "RolePermissions",
+    "Attachments",
+    "Brands",
+    "Unit",
+    "Categories",
+    "Tags",
+    "Products",
+    "Customers",
+    "Suppliers",
+    "Purchases",
+    "Sales",
+    "POS",
+    "Reports",
+    "Warehouses",
+    "Inventory",
+    "Accounts",
+    "Payments",
+    "Branches",
+    "ExpenseCategories",
+    "Expenses",
+    "CustomerGroups",
+    "Settings",
+    "PurchaseReturns",
+    "Departments",
+    "Designations",
+    "Employees",
+    "Attendance",
+    "LeaveRequests",
+    "LeaveBalance",
+    "LeaveSummary",
+    "LeaveApprovalHistory",
+    "PendingApprovals",
+    "LeaveApprovalDashboard",
+    "CashRegister",
+    "CashRegisterTransaction",
+    "Backup",
+    "BackupSchedule",
+    "Quotations",
+    "VariationTemplates",
+    "ProductionOrders",
+    "ProductionOrderStats",
+    "ProductionOrderLogs",
+    "ProductionRecipes",
+    "MaterialConsumption",
+    "Manufacturers",
+  ],
+  endpoints: () => ({}),
+});

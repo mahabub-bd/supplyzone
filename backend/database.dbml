@@ -1,0 +1,1164 @@
+Enum "accounts_type_enum" {
+  "asset"
+  "liability"
+  "equity"
+  "income"
+  "expense"
+}
+
+Enum "approval_delegations_delegationtype_enum" {
+  "leave_approval"
+  "payroll_approval"
+  "attendance_approval"
+  "expense_approval"
+}
+
+Enum "attendance_status_enum" {
+  "present"
+  "absent"
+  "late"
+  "half_day"
+  "on_leave"
+  "holiday"
+}
+
+Enum "audit_trails_action_enum" {
+  "CREATE"
+  "UPDATE"
+  "DELETE"
+  "VIEW"
+  "LOGIN"
+  "LOGOUT"
+  "APPROVE"
+  "REJECT"
+  "PROCESS"
+  "CANCEL"
+  "EXPORT"
+  "IMPORT"
+  "PRINT"
+}
+
+Enum "audit_trails_module_enum" {
+  "SALES"
+  "PURCHASES"
+  "INVENTORY"
+  "ACCOUNTING"
+  "CUSTOMERS"
+  "SUPPLIERS"
+  "USERS"
+  "PRODUCTS"
+  "WAREHOUSES"
+  "BRANCHES"
+  "REPORTS"
+  "SETTINGS"
+  "AUTH"
+}
+
+Enum "departments_status_enum" {
+  "active"
+  "inactive"
+}
+
+Enum "designations_level_enum" {
+  "junior_officer"
+  "officer"
+  "senior_officer"
+  "executive"
+  "senior_executive"
+  "assistant_manager"
+  "manager"
+  "senior_manager"
+  "head_of_department"
+  "cfo"
+  "cto"
+  "cio"
+  "coo"
+  "director"
+  "managing_director"
+}
+
+Enum "discounts_applicable_to_enum" {
+  "product"
+  "category"
+  "brand"
+  "customer"
+  "order"
+}
+
+Enum "discounts_type_enum" {
+  "percentage"
+  "fixed"
+}
+
+Enum "employees_employee_type_enum" {
+  "full_time"
+  "part_time"
+  "contract"
+  "intern"
+}
+
+Enum "employees_status_enum" {
+  "active"
+  "inactive"
+  "terminated"
+  "resigned"
+  "on_leave"
+}
+
+Enum "expenses_payment_method_enum" {
+  "cash"
+  "bank"
+  "mobile"
+}
+
+Enum "inventory_movements_type_enum" {
+  "IN"
+  "OUT"
+  "ADJUST"
+  "TRANSFER"
+}
+
+Enum "leave_approvals_status_enum" {
+  "pending"
+  "approved"
+  "rejected"
+  "skipped"
+}
+
+Enum "leave_requests_leave_type_enum" {
+  "annual"
+  "sick"
+  "maternity"
+  "paternity"
+  "unpaid"
+  "compassionate"
+  "study"
+}
+
+Enum "leave_requests_status_enum" {
+  "pending"
+  "approved"
+  "rejected"
+  "cancelled"
+}
+
+Enum "payments_type_enum" {
+  "supplier"
+  "customer"
+}
+
+Enum "payroll_items_type_enum" {
+  "allowance"
+  "deduction"
+  "bonus"
+  "overtime"
+  "tax"
+  "insurance"
+  "other"
+}
+
+Enum "payroll_records_payment_method_enum" {
+  "cash"
+  "bank_transfer"
+  "check"
+  "digital_wallet"
+}
+
+Enum "payroll_records_status_enum" {
+  "draft"
+  "pending"
+  "approved"
+  "paid"
+  "cancelled"
+}
+
+Enum "purchase_returns_status_enum" {
+  "draft"
+  "approved"
+  "processed"
+  "cancelled"
+}
+
+Enum "sale_return_items_item_condition_enum" {
+  "new"
+  "good"
+  "damaged"
+  "defective"
+  "missing_parts"
+}
+
+Enum "sale_returns_refund_method_enum" {
+  "cash"
+  "bank"
+  "mobile"
+  "store_credit"
+  "exchange"
+}
+
+Enum "sale_returns_status_enum" {
+  "draft"
+  "approved"
+  "processed"
+  "cancelled"
+}
+
+Enum "users_status_enum" {
+  "pending"
+  "active"
+  "suspend"
+  "deactive"
+}
+
+Table "permissions" {
+  "id" int4 [pk, not null, increment]
+  "key" varchar [unique, not null]
+  "description" varchar
+}
+
+Table "users" {
+  "id" int4 [pk, not null, increment]
+  "username" varchar [unique, not null]
+  "email" varchar [unique, not null]
+  "full_name" varchar [not null]
+  "phone" varchar
+  "password_hash" varchar [not null]
+  "last_login_at" timestamp
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "status" users_status_enum [not null, default: 'active']
+}
+
+Table "roles" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "description" varchar
+}
+
+Table "user_roles" {
+  "user_id" int4 [not null]
+  "role_id" int4 [not null]
+
+  Indexes {
+    (user_id, role_id) [pk, type: btree, name: "PK_23ed6f04fe43066df08379fd034"]
+    user_id [type: btree, name: "IDX_87b8888186ca9769c960e92687"]
+    role_id [type: btree, name: "IDX_b23c65e50a758245a33ee35fda"]
+  }
+}
+
+Table "role_permissions" {
+  "role_id" int4 [not null]
+  "permission_id" int4 [not null]
+
+  Indexes {
+    (role_id, permission_id) [pk, type: btree, name: "PK_25d24010f53bb80b78e412c9656"]
+    permission_id [type: btree, name: "IDX_17022daf3f885f7d35423e9971"]
+    role_id [type: btree, name: "IDX_178199805b901ccd220ab7740e"]
+  }
+}
+
+Table "attachments" {
+  "id" int4 [pk, not null, increment]
+  "file_name" varchar [not null]
+  "url" text [not null]
+  "mime_type" varchar
+  "size" int8
+  "storage_type" varchar [not null, default: 'S3']
+  "uploaded_by" int4
+  "created_at" timestamptz [not null, default: `now()`]
+  "updated_at" timestamptz [not null, default: `now()`]
+}
+
+Table "brands" {
+  "name" varchar [unique, not null]
+  "logo_attachment_id" int4
+  "created_at" timestamptz [not null, default: `now()`]
+  "updated_at" timestamptz [not null, default: `now()`]
+  "created_by" int4
+  "id" int4 [pk, not null, increment]
+  "description" varchar
+}
+
+Table "units" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "code" varchar [unique, not null]
+  "description" varchar
+  "isActive" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "categories" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "slug" varchar
+  "description" varchar
+  "status" bool [not null, default: true]
+  "logo_attachment_id" int4
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "created_by" int4
+}
+
+Table "warehouses" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "location" varchar
+  "status" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "address" varchar
+}
+
+Table "tags" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "slug" varchar
+  "description" varchar
+  "status" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "createdById" int4
+}
+
+Table "subcategories" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "slug" varchar
+  "description" varchar
+  "status" bool [not null, default: true]
+  "category_id" int4 [not null]
+  "created_by" int4
+  "logo_attachment_id" int4
+}
+
+Table "accounts" {
+  "id" int4 [pk, not null, increment]
+  "account_number" varchar [unique, not null]
+  "code" varchar [unique, not null]
+  "name" varchar [not null]
+  "type" accounts_type_enum [not null]
+  "isCash" bool [not null, default: false]
+  "isBank" bool [not null, default: false]
+  "isCustomer" bool [not null, default: false]
+}
+
+Table "suppliers" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "contact_person" varchar
+  "phone" varchar
+  "email" varchar
+  "address" text
+  "payment_terms" varchar
+  "status" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "account_id" int4 [unique]
+  "supplier_code" varchar(20) [unique, not null]
+}
+
+Table "products" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "sku" varchar [unique]
+  "barcode" varchar
+  "description" text
+  "selling_price" numeric(12,2) [not null, default: '0']
+  "purchase_price" numeric(12,2) [not null, default: '0']
+  "discount_price" numeric(12,2)
+  "status" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "brandId" int4
+  "categoryId" int4
+  "subcategoryId" int4
+  "unitId" int4
+  "supplier_id" int4
+  "createdById" int4
+}
+
+Table "inventory_movements" {
+  "id" int4 [pk, not null, increment]
+  "product_id" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "type" inventory_movements_type_enum [not null]
+  "quantity" int4 [not null]
+  "note" varchar
+  "from_warehouse_id" int4
+  "to_warehouse_id" int4
+  "created_at" timestamp [not null, default: `now()`]
+  "productId" int4
+  "warehouseId" int4
+  "fromWarehouseId" int4
+  "toWarehouseId" int4
+  "createdById" int4
+}
+
+Table "product_tags" {
+  "tag_id" int4 [not null]
+  "product_id" int4 [not null]
+
+  Indexes {
+    (tag_id, product_id) [pk, type: btree, name: "PK_8ca809b37ff76596b63fe60ac41"]
+    product_id [type: btree, name: "IDX_5b0c6fc53c574299ecc7f9ee22"]
+    tag_id [type: btree, name: "IDX_f2cd3faf2e129a4c69c05a291e"]
+  }
+}
+
+Table "product_images" {
+  "product_id" int4 [not null]
+  "attachment_id" int4 [not null]
+
+  Indexes {
+    (product_id, attachment_id) [pk, type: btree, name: "PK_aa94fea6910364d00f7d6a1dd6b"]
+    product_id [type: btree, name: "IDX_4f166bb8c2bfcef2498d97b406"]
+    attachment_id [type: btree, name: "IDX_d6cd312e11a19376ba59780ca4"]
+  }
+}
+
+Table "customers" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "phone" varchar
+  "email" varchar
+  "status" bool [not null, default: true]
+  "account_id" int4 [unique]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "customer_code" varchar(20) [unique, not null]
+  "group_id" int4
+  "reward_points" numeric(10,2) [not null, default: '0']
+}
+
+Table "branches" {
+  "id" int4 [pk, not null, increment]
+  "code" varchar [unique, not null]
+  "name" varchar [not null]
+  "address" varchar
+  "phone" varchar
+  "email" varchar
+  "is_active" bool [not null, default: true]
+  "default_warehouse_id" int4
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "expenses" {
+  "id" int4 [pk, not null, increment]
+  "title" varchar [not null]
+  "description" varchar
+  "amount" numeric(14,2) [not null]
+  "receipt_url" varchar
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "category_id" int4 [not null]
+  "account_code" varchar(50)
+  "branch_id" int4 [not null]
+  "created_by" int4
+  "payment_method" expenses_payment_method_enum [not null, default: 'cash']
+}
+
+Table "expense_categories" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "description" varchar
+  "is_active" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "sale_items" {
+  "id" int4 [pk, not null, increment]
+  "quantity" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "unit_price" numeric(14,2) [not null]
+  "discount" numeric(14,2) [not null, default: '0']
+  "tax" numeric(14,2) [not null, default: '0']
+  "line_total" numeric(14,2) [not null]
+  "saleId" int4
+  "productId" int4
+}
+
+Table "sale_payments" {
+  "id" int4 [pk, not null, increment]
+  "method" varchar(50) [not null]
+  "amount" numeric(14,2) [not null]
+  "account_code" varchar
+  "reference" varchar
+  "created_at" timestamp [not null, default: `now()`]
+  "saleId" int4
+}
+
+Table "sales" {
+  "id" int4 [pk, not null, increment]
+  "invoice_no" varchar [unique, not null]
+  "subtotal" numeric(14,2) [not null, default: '0']
+  "discount" numeric(14,2) [not null, default: '0']
+  "tax" numeric(14,2) [not null, default: '0']
+  "total" numeric(14,2) [not null, default: '0']
+  "paid_amount" numeric(14,2) [not null, default: '0']
+  "status" varchar(32) [not null, default: 'completed']
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "customerId" int4
+  "createdById" int4
+  "branch_id" int4
+  "sale_type" varchar(20) [not null, default: 'regular']
+  "servedById" int4
+  "manual_discount" numeric(14,2) [not null, default: '0']
+  "group_discount" numeric(14,2) [not null, default: '0']
+}
+
+Table "account_transactions" {
+  "id" int4 [pk, not null, increment]
+  "reference_type" varchar [not null]
+  "reference_id" int4 [not null]
+  "created_at" timestamp [not null, default: `now()`]
+}
+
+Table "account_entries" {
+  "id" int4 [pk, not null, increment]
+  "debit" numeric(12,2) [not null]
+  "credit" numeric(12,2) [not null]
+  "narration" varchar
+  "transaction_id" int4
+  "account_id" int4
+}
+
+Table "payments" {
+  "id" int4 [pk, not null, increment]
+  "type" payments_type_enum [not null]
+  "amount" numeric(12,2) [not null]
+  "method" varchar [not null]
+  "note" varchar
+  "supplier_id" int4
+  "purchase_id" int4
+  "created_at" timestamp [not null, default: `now()`]
+  "customer_id" int4
+  "sale_id" int4
+}
+
+Table "purchase_items" {
+  "id" int4 [pk, not null, increment]
+  "purchase_id" int4 [not null]
+  "product_id" int4 [not null]
+  "quantity" int4 [not null]
+  "price" numeric(12,2) [not null]
+}
+
+Table "purchases" {
+  "id" int4 [pk, not null, increment]
+  "po_no" varchar [unique, not null]
+  "supplier_id" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "total" numeric(12,2) [not null]
+  "status" varchar [not null, default: 'draft']
+  "paid_amount" numeric(12,2) [not null, default: '0']
+  "due_amount" numeric(12,2) [not null, default: '0']
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "inventory_batches" {
+  "id" int4 [pk, not null, increment]
+  "product_id" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "batch_no" varchar
+  "quantity" int4 [not null, default: 0]
+  "sold_quantity" int4 [not null, default: 0]
+  "expiry_date" timestamp
+  "purchase_price" numeric(12,2) [not null, default: '0']
+  "supplier" varchar
+  "purchase_item_id" int4
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "createdById" int4
+}
+
+Table "customer_groups" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "description" varchar
+  "discount_percentage" numeric(5,2) [not null, default: '0']
+  "is_active" bool [not null, default: true]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "user_branches" {
+  "user_id" int4 [not null]
+  "branch_id" int4 [not null]
+
+  Indexes {
+    (user_id, branch_id) [pk, type: btree, name: "PK_79e020eef929e23dfdd6f9b8720"]
+    branch_id [type: btree, name: "IDX_7252d91dd610730c97d6b58ae7"]
+    user_id [type: btree, name: "IDX_a93a8dec13e6204974dd67386e"]
+  }
+}
+
+Table "purchase_returns" {
+  "id" int4 [pk, not null, increment]
+  "return_no" varchar [unique, not null]
+  "total" numeric(12,2) [not null, default: '0']
+  "reason" varchar
+  "status" purchase_returns_status_enum [not null, default: 'draft']
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "purchase_id" int4 [not null]
+  "supplier_id" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "approved_at" timestamp
+  "processed_at" timestamp
+  "approved_by" int4
+  "processed_by" int4
+  "approval_notes" text
+  "processing_notes" text
+  "refund_to_supplier" bool
+  "refund_amount" numeric(12,2)
+  "refund_payment_method" varchar
+  "refund_reference" varchar
+  "refunded_at" timestamp
+  "debit_account_code" varchar
+}
+
+Table "purchase_return_items" {
+  "id" int4 [pk, not null, increment]
+  "returned_quantity" int4 [not null]
+  "price" numeric(12,2) [not null]
+  "line_total" numeric(12,2) [not null]
+  "purchase_return_id" int4 [not null]
+  "purchase_item_id" int4
+  "product_id" int4 [not null]
+}
+
+Table "sale_return_items" {
+  "id" int4 [pk, not null, increment]
+  "sale_return_id" int4 [not null]
+  "sale_item_id" int4 [not null]
+  "product_id" int4 [not null]
+  "returned_quantity" int4 [not null]
+  "unit_price" numeric(12,2) [not null]
+  "discount" numeric(12,2) [not null, default: '0']
+  "tax" numeric(12,2) [not null, default: '0']
+  "line_total" numeric(12,2) [not null]
+  "return_reason" varchar
+  "item_condition" sale_return_items_item_condition_enum
+}
+
+Table "sale_returns" {
+  "id" int4 [pk, not null, increment]
+  "return_no" varchar [unique, not null]
+  "sale_id" int4 [not null]
+  "customer_id" int4 [not null]
+  "warehouse_id" int4 [not null]
+  "branch_id" int4 [not null]
+  "processed_by_id" int4
+  "total" numeric(12,2) [not null, default: '0']
+  "refunded_amount" numeric(12,2) [not null, default: '0']
+  "remaining_amount" numeric(12,2) [not null, default: '0']
+  "reason" varchar
+  "status" sale_returns_status_enum [not null, default: 'draft']
+  "refund_method" sale_returns_refund_method_enum
+  "refund_notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "audit_trails" {
+  "id" int4 [pk, not null, increment]
+  "user_id" int4
+  "username" varchar(100)
+  "action" audit_trails_action_enum [not null]
+  "module" audit_trails_module_enum [not null]
+  "entity_type" varchar(50) [not null, default: 'Unknown']
+  "entity_id" int4
+  "entity_identifier" varchar(100)
+  "ip_address" varchar(45)
+  "user_agent" text
+  "old_values" json
+  "new_values" json
+  "description" text
+  "metadata" json
+  "success" bool [not null, default: true]
+  "error_message" text
+  "duration_ms" int4
+  "created_at" timestamp [not null, default: `now()`]
+
+  Indexes {
+    action [type: btree, name: "IDX_43d5e8e713e719ef4e8d352198"]
+    created_at [type: btree, name: "IDX_6a6abc2b62799b3ba07c424597"]
+    user_id [type: btree, name: "IDX_ed8d9979a8295afe3a06fb5d82"]
+    module [type: btree, name: "IDX_f1ca85034df9220517555f9385"]
+  }
+}
+
+Table "settings" {
+  "id" int4 [pk, not null, increment]
+  "business_name" varchar(255)
+  "tagline" text
+  "email" varchar(255)
+  "phone" varchar(50)
+  "address" text
+  "website" varchar(255)
+  "currency" varchar(10) [default: 'USD']
+  "currency_symbol" varchar(10) [default: '$']
+  "tax_registration" varchar(100)
+  "company_registration" varchar(100)
+  "default_tax_percentage" numeric(5,2) [default: '0']
+  "low_stock_threshold" numeric(5,2) [default: '20']
+  "logo_attachment_id" int4
+  "footer_text" text
+  "receipt_header" varchar(255)
+  "include_barcode" bool [not null, default: false]
+  "include_customer_details" bool [not null, default: true]
+  "enable_auto_backup" bool [not null, default: true]
+  "backup_retention_days" int4 [not null, default: 30]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "country" varchar(100)
+  "default_invoice_layout" varchar(50) [default: 'standard']
+  "show_product_images" bool [not null, default: false]
+  "show_product_skus" bool [not null, default: true]
+  "show_item_tax_details" bool [not null, default: false]
+  "show_payment_breakdown" bool [not null, default: true]
+  "invoice_paper_size" varchar(20) [default: 'A4']
+  "print_duplicate_copy" bool [not null, default: false]
+  "invoice_footer_message" text
+  "use_thermal_printer" bool [not null, default: false]
+}
+
+Table "invoice_layouts" {
+  "id" int4 [pk, not null, increment]
+  "slug" varchar [unique, not null]
+  "name" varchar(100) [not null]
+  "description" text
+  "template_html" text [not null]
+  "template_css" text
+  "paper_size" varchar(20) [not null, default: 'A4']
+  "is_thermal" bool [not null, default: false]
+  "orientation" varchar(10) [not null, default: 'portrait']
+  "is_active" bool [not null, default: true]
+  "is_system" bool [not null, default: false]
+  "metadata" json
+  "preview_url" varchar(255)
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "invoice_items" {
+  "id" int4 [pk, not null, increment]
+  "invoice_id" int4 [not null]
+  "product_id" int4 [not null]
+  "product_name" varchar [not null]
+  "description" text
+  "quantity" int4 [not null, default: 1]
+  "unit_price" numeric(10,2) [not null]
+  "discount_percentage" numeric(5,2) [not null, default: '0']
+  "tax_percentage" numeric(5,2) [not null, default: '0']
+  "total_price" numeric(10,2) [not null]
+  "invoiceId" int4
+}
+
+Table "invoices" {
+  "id" int4 [pk, not null, increment]
+  "invoice_no" varchar [unique, not null]
+  "invoice_date" date [not null]
+  "due_date" date
+  "customer_id" int4 [not null]
+  "subtotal" numeric(10,2) [not null, default: '0']
+  "tax_amount" numeric(10,2) [not null, default: '0']
+  "discount_amount" numeric(10,2) [not null, default: '0']
+  "total_amount" numeric(10,2) [not null, default: '0']
+  "paid_amount" numeric(10,2) [not null, default: '0']
+  "due_amount" numeric(10,2) [not null, default: '0']
+  "status" varchar(20) [not null, default: 'pending']
+  "notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "billing_addresses" {
+  "id" int4 [pk, not null, increment]
+  "contact_name" varchar
+  "phone" varchar
+  "street" varchar [not null]
+  "city" varchar [not null]
+  "country" varchar [not null]
+  "customer_id" int4 [unique, not null]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "shipping_addresses" {
+  "id" int4 [pk, not null, increment]
+  "contact_name" varchar
+  "phone" varchar
+  "street" varchar [not null]
+  "city" varchar [not null]
+  "country" varchar [not null]
+  "customer_id" int4 [unique, not null]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "attendance" {
+  "id" int4 [pk, not null, increment]
+  "date" date [not null]
+  "check_in" time
+  "check_out" time
+  "regular_hours" numeric(5,2) [not null, default: '0']
+  "overtime_hours" numeric(5,2) [not null, default: '0']
+  "status" attendance_status_enum [not null, default: 'present']
+  "notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "branch_id" int4
+  "employeeId" int4
+}
+
+Table "approval_delegations" {
+  "delegationType" approval_delegations_delegationtype_enum [not null]
+  "startDate" date [not null]
+  "endDate" date [not null]
+  "reason" text
+  "isActive" bool [not null, default: true]
+  "isReusable" bool [not null, default: true]
+  "maxApprovals" int4
+  "usedApprovals" int4 [not null, default: 0]
+  "branch_id" int4 [not null]
+  "createdAt" timestamptz [not null, default: `now()`]
+  "updatedAt" timestamptz [not null, default: `now()`]
+  "deletedAt" timestamptz
+  "delegatorId" int4 [not null]
+  "delegateeId" int4 [not null]
+  "id" int4 [pk, not null, increment]
+}
+
+Table "departments" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [unique, not null]
+  "description" varchar
+  "status" departments_status_enum [not null, default: 'active']
+  "code" varchar
+  "manager_name" varchar
+  "manager_email" varchar
+  "notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "deleted_at" timestamp
+}
+
+Table "leave_requests" {
+  "id" int4 [pk, not null, increment]
+  "start_date" date [not null]
+  "end_date" date [not null]
+  "days_count" numeric(3,1) [not null]
+  "leave_type" leave_requests_leave_type_enum [not null]
+  "status" leave_requests_status_enum [not null, default: 'pending']
+  "reason" text [not null]
+  "rejection_reason" text
+  "approved_date" date
+  "approver_notes" text
+  "currentApprovalLevel" int4
+  "totalApprovalLevels" int4
+  "completedApprovalLevels" int4 [not null, default: 0]
+  "isFullyApproved" bool [not null, default: false]
+  "requiresMultiLevelApproval" bool [not null, default: false]
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "branch_id" int4
+  "employeeId" int4
+  "currentApproverId" int4
+}
+
+Table "payroll_items" {
+  "id" int4 [pk, not null, increment]
+  "name" varchar [not null]
+  "type" payroll_items_type_enum [not null]
+  "amount" numeric(15,2) [not null]
+  "percentage" numeric(5,2) [not null, default: '0']
+  "description" text
+  "created_at" timestamp [not null, default: `now()`]
+  "payrollRecordId" int4
+}
+
+Table "payroll_records" {
+  "id" int4 [pk, not null, increment]
+  "pay_period_start" timestamp [not null]
+  "pay_period_end" timestamp [not null]
+  "payment_date" date [not null]
+  "status" payroll_records_status_enum [not null, default: 'draft']
+  "payment_method" payroll_records_payment_method_enum [not null, default: 'bank_transfer']
+  "base_salary" numeric(15,2) [not null]
+  "overtime_hours" numeric(15,2) [not null, default: '0']
+  "overtime_rate" numeric(15,2) [not null, default: '0']
+  "overtime_pay" numeric(15,2) [not null, default: '0']
+  "allowances" numeric(15,2) [not null, default: '0']
+  "bonuses" numeric(15,2) [not null, default: '0']
+  "deductions" numeric(15,2) [not null, default: '0']
+  "tax" numeric(15,2) [not null, default: '0']
+  "other_deductions" numeric(15,2) [not null, default: '0']
+  "gross_salary" numeric(15,2) [not null]
+  "net_salary" numeric(15,2) [not null]
+  "payment_reference" text
+  "notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "branch_id" int4
+  "employeeId" int4
+}
+
+Table "designations" {
+  "id" int4 [pk, not null, increment]
+  "title" varchar(100) [not null]
+  "code" varchar(50) [unique, not null]
+  "level" designations_level_enum [not null]
+  "description" text
+  "minSalary" numeric(12,2)
+  "maxSalary" numeric(12,2)
+  "autoApproveLeaveDays" int4 [default: 2]
+  "canApproveLeave" bool [not null, default: false]
+  "canApprovePayroll" bool [not null, default: false]
+  "parentDesignationId" int4
+  "isActive" bool [not null, default: true]
+  "sortOrder" int4 [not null, default: 0]
+  "createdAt" timestamptz [not null, default: `now()`]
+  "updatedAt" timestamptz [not null, default: `now()`]
+  "deletedAt" timestamptz
+}
+
+Table "employees" {
+  "employee_code" varchar [unique, not null]
+  "first_name" varchar [not null]
+  "last_name" varchar [not null]
+  "email" varchar [unique, not null]
+  "phone" varchar
+  "address" varchar
+  "date_of_birth" date
+  "hire_date" date [not null]
+  "termination_date" date
+  "status" employees_status_enum [not null, default: 'active']
+  "employee_type" employees_employee_type_enum [not null, default: 'full_time']
+  "base_salary" numeric(15,2)
+  "designationId" int4
+  "notes" text
+  "created_at" timestamp [not null, default: `now()`]
+  "updated_at" timestamp [not null, default: `now()`]
+  "branch_id" int4
+  "userId" int4
+  "departmentId" int4
+  "id" int4 [pk, not null, increment]
+  "reportingManagerId" int4
+}
+
+Table "leave_approvals" {
+  "leaveRequestId" int4 [not null]
+  "approvalLevel" int4 [not null]
+  "status" leave_approvals_status_enum [not null, default: 'pending']
+  "isAutoApproved" bool [not null, default: false]
+  "approvalDate" date
+  "approverComments" text
+  "rejectionReason" text
+  "isFinalApproval" bool [not null, default: false]
+  "minRequiredLevel" int4
+  "sequence" int4 [not null, default: 1]
+  "createdAt" timestamptz [not null, default: `now()`]
+  "updatedAt" timestamptz [not null, default: `now()`]
+  "approverId" int4 [not null]
+  "originalApproverId" int4
+  "id" int4 [pk, not null, increment]
+}
+
+Ref "FK_10c3851ebe80f1ffa53f5726814":"account_transactions"."id" < "account_entries"."transaction_id"
+
+Ref "FK_c3be9b07820be8450161d6ba4d2":"accounts"."id" < "account_entries"."account_id"
+
+Ref "FK_170c0e68f82d4f347ceb204c4db":"employees"."id" < "approval_delegations"."delegateeId"
+
+Ref "FK_54e0fe292f68b20130c6827bf63":"branches"."id" < "approval_delegations"."branch_id"
+
+Ref "FK_c2bf4f628fa04c85979c2c6f9f7":"employees"."id" < "approval_delegations"."delegatorId"
+
+Ref "FK_e25812e3fd9b3f3edf11b2c5d58":"users"."id" < "attachments"."uploaded_by" [delete: set null]
+
+Ref "FK_07731c02b0333dc9b2678f98213":"employees"."id" < "attendance"."employeeId"
+
+Ref "FK_57d9568ba7582b0c3dcb8e9c5e5":"branches"."id" < "attendance"."branch_id"
+
+Ref "FK_fe49191851cd9c2339c4680aa2f":"customers"."id" < "billing_addresses"."customer_id" [delete: cascade]
+
+Ref "FK_99255b9d41fa2481d4baed83042":"warehouses"."id" < "branches"."default_warehouse_id"
+
+Ref "FK_1d6279240938040736d83064356":"attachments"."id" < "brands"."logo_attachment_id" [delete: set null]
+
+Ref "FK_43291261334c16b47ff227c09ff":"users"."id" < "brands"."created_by"
+
+Ref "FK_23ad9291e0e22cdf46ae7ec5461":"users"."id" < "categories"."created_by"
+
+Ref "FK_a401724694a69d8ac9d51032f7f":"attachments"."id" < "categories"."logo_attachment_id" [delete: set null]
+
+Ref "FK_3c205d25767606602d2a84bf8eb":"customer_groups"."id" < "customers"."group_id"
+
+Ref "FK_ebcc29963874e55053e8ee80be5":"accounts"."id" < "customers"."account_id"
+
+Ref "FK_7ef09857877569fe07044896a83":"designations"."id" < "designations"."parentDesignationId"
+
+Ref "FK_0ee1fa8d2cfe91f9dac54f9e2ff":"branches"."id" < "employees"."branch_id"
+
+Ref "FK_12c6c1ac43cccd5c7b71fe5e53a":"employees"."id" < "employees"."reportingManagerId"
+
+Ref "FK_4edfe103ebf2fcb98dbb582554b":"departments"."id" < "employees"."departmentId"
+
+Ref "FK_737991e10350d9626f592894cef":"users"."id" < "employees"."userId"
+
+Ref "FK_8eed4bfc75840eeb9780f017e9e":"designations"."id" < "employees"."designationId"
+
+Ref "FK_5d1f4be708e0dfe2afa1a3c376c":"expense_categories"."id" < "expenses"."category_id"
+
+Ref "FK_7c0c012c2f8e6578277c239ee61":"users"."id" < "expenses"."created_by"
+
+Ref "FK_866a3b82ff438efc19c2398cda6":"branches"."id" < "expenses"."branch_id"
+
+Ref "FK_8b54f51da10e4004007730d16fb":"purchase_items"."id" < "inventory_batches"."purchase_item_id" [delete: cascade]
+
+Ref "FK_9350781ae7a615d184b56660e31":"products"."id" < "inventory_batches"."product_id" [delete: cascade]
+
+Ref "FK_acf4184d2246fe1d167f5b9729a":"warehouses"."id" < "inventory_batches"."warehouse_id" [delete: cascade]
+
+Ref "FK_e125b7e97fdab6312ad7f47edb3":"users"."id" < "inventory_batches"."createdById"
+
+Ref "FK_05715a7ea47e49653f164c0dd8c":"products"."id" < "inventory_movements"."productId" [delete: set null]
+
+Ref "FK_1a3b2b18ca35b5930fa9d7f9a6a":"warehouses"."id" < "inventory_movements"."fromWarehouseId"
+
+Ref "FK_462c72d77ae4cd070016cdb78d5":"warehouses"."id" < "inventory_movements"."toWarehouseId"
+
+Ref "FK_963cc1645cd32c1ddbc1dcb3efa":"users"."id" < "inventory_movements"."createdById"
+
+Ref "FK_f5e2a192d8b645f5d49fd0acae3":"warehouses"."id" < "inventory_movements"."warehouseId" [delete: set null]
+
+Ref "FK_7fb6895fc8fad9f5200e91abb59":"invoices"."id" < "invoice_items"."invoiceId"
+
+Ref "FK_2d07e626dea3edf59187cd60a78":"employees"."id" < "leave_approvals"."originalApproverId"
+
+Ref "FK_f9d987693b8da6a02b566158512":"leave_requests"."id" < "leave_approvals"."leaveRequestId"
+
+Ref "FK_ffa85f79b5fde37f5336d39e240":"employees"."id" < "leave_approvals"."approverId"
+
+Ref "FK_4d2cfaccf9b6fa4a494ee87088e":"branches"."id" < "leave_requests"."branch_id"
+
+Ref "FK_4eda1468756ca831495e308e407":"employees"."id" < "leave_requests"."employeeId"
+
+Ref "FK_57a1f8699492fb94ce1352f787f":"purchases"."id" < "payments"."purchase_id"
+
+Ref "FK_a9272c4415ef64294b104e378ac":"sales"."id" < "payments"."sale_id"
+
+Ref "FK_b987d35c34fd0c92a87325cff0f":"suppliers"."id" < "payments"."supplier_id"
+
+Ref "FK_d0b02233df1c52323107fe7b4d7":"customers"."id" < "payments"."customer_id"
+
+Ref "FK_02e9105221137f1c96b04a3bdf5":"payroll_records"."id" < "payroll_items"."payrollRecordId"
+
+Ref "FK_54ffbfa84af17b62537fa0f2d28":"employees"."id" < "payroll_records"."employeeId"
+
+Ref "FK_dbba74ede09695929b5d48ea913":"branches"."id" < "payroll_records"."branch_id"
+
+Ref "FK_4f166bb8c2bfcef2498d97b4068":"products"."id" < "product_images"."product_id" [update: cascade, delete: cascade]
+
+Ref "FK_d6cd312e11a19376ba59780ca47":"attachments"."id" < "product_images"."attachment_id" [update: cascade, delete: cascade]
+
+Ref "FK_5b0c6fc53c574299ecc7f9ee22e":"products"."id" < "product_tags"."product_id"
+
+Ref "FK_f2cd3faf2e129a4c69c05a291e8":"tags"."id" < "product_tags"."tag_id" [update: cascade, delete: cascade]
+
+Ref "FK_0ec433c1e1d444962d592d86c86":"suppliers"."id" < "products"."supplier_id"
+
+Ref "FK_7527f75cb36bea4b7f2b86f7d1d":"subcategories"."id" < "products"."subcategoryId"
+
+Ref "FK_c65251602de2a10b9c6e1af8511":"units"."id" < "products"."unitId"
+
+Ref "FK_de1043dff8f68e83a20480b00f7":"users"."id" < "products"."createdById"
+
+Ref "FK_ea86d0c514c4ecbb5694cbf57df":"brands"."id" < "products"."brandId"
+
+Ref "FK_ff56834e735fa78a15d0cf21926":"categories"."id" < "products"."categoryId"
+
+Ref "FK_43694b2fa800ce38d2da9ce74d6":"products"."id" < "purchase_items"."product_id"
+
+Ref "FK_607211d59b13e705a673a999ab5":"purchases"."id" < "purchase_items"."purchase_id" [delete: cascade]
+
+Ref "FK_0d0de1a0fceb2ca709521541830":"products"."id" < "purchase_return_items"."product_id"
+
+Ref "FK_47b1aa5d5433164bbcf94458f73":"purchase_items"."id" < "purchase_return_items"."purchase_item_id"
+
+Ref "FK_9a68dc0c9f15501f6ce7a31b969":"purchase_returns"."id" < "purchase_return_items"."purchase_return_id" [delete: cascade]
+
+Ref "FK_2695ae17e9b3bea5279084947c8":"users"."id" < "purchase_returns"."processed_by"
+
+Ref "FK_328231d1315ec1bc5ec37890a54":"purchases"."id" < "purchase_returns"."purchase_id"
+
+Ref "FK_7042f8103fa903c22b32e43e656":"warehouses"."id" < "purchase_returns"."warehouse_id"
+
+Ref "FK_8c67adeb896936f85272e7e8b16":"suppliers"."id" < "purchase_returns"."supplier_id"
+
+Ref "FK_9fef194e28fee250da397b8b238":"users"."id" < "purchase_returns"."approved_by"
+
+Ref "FK_b6edae814c69f84a66c554f78f4":"warehouses"."id" < "purchases"."warehouse_id"
+
+Ref "FK_d5fec047f705d5b510c19379b95":"suppliers"."id" < "purchases"."supplier_id"
+
+Ref "FK_17022daf3f885f7d35423e9971e":"permissions"."id" < "role_permissions"."permission_id"
+
+Ref "FK_178199805b901ccd220ab7740ec":"roles"."id" < "role_permissions"."role_id" [update: cascade, delete: cascade]
+
+Ref "FK_c642be08de5235317d4cf3deb40":"sales"."id" < "sale_items"."saleId" [delete: cascade]
+
+Ref "FK_d675aea38a16313e844662c48f8":"products"."id" < "sale_items"."productId"
+
+Ref "FK_ad8e4736c560dc015611d3b7fc2":"sales"."id" < "sale_payments"."saleId" [delete: cascade]
+
+Ref "FK_07250d0eb513a2f1b30b6c8e4bc":"sale_items"."id" < "sale_return_items"."sale_item_id"
+
+Ref "FK_dc78c01dfac83634562e2fd88ba":"products"."id" < "sale_return_items"."product_id"
+
+Ref "FK_fee3a82ea330b3b8df0b41fc5da":"sale_returns"."id" < "sale_return_items"."sale_return_id" [delete: cascade]
+
+Ref "FK_13765777df1756d738b9ce1f7fe":"customers"."id" < "sale_returns"."customer_id"
+
+Ref "FK_15c0a61420a42a431ffb9285717":"branches"."id" < "sale_returns"."branch_id"
+
+Ref "FK_2b61a5fa8b873de80fd16331667":"sales"."id" < "sale_returns"."sale_id"
+
+Ref "FK_7a1d98bf35e97708267880814a3":"users"."id" < "sale_returns"."processed_by_id"
+
+Ref "FK_7da72e162c16bfb7ccfa5c65939":"warehouses"."id" < "sale_returns"."warehouse_id"
+
+Ref "FK_2bd8022737514d96426897631e7":"users"."id" < "sales"."servedById"
+
+Ref "FK_3025cd80c0a8de190072940e10f":"branches"."id" < "sales"."branch_id"
+
+Ref "FK_3a92cf6add00043cef9833db1cd":"customers"."id" < "sales"."customerId"
+
+Ref "FK_579a13a0f8d438c6f5a0d732556":"users"."id" < "sales"."createdById"
+
+Ref "FK_acb7fce9464ca5d35ab233f2428":"attachments"."id" < "settings"."logo_attachment_id" [delete: set null]
+
+Ref "FK_6acb476f20430e32f8382511c6b":"customers"."id" < "shipping_addresses"."customer_id" [delete: cascade]
+
+Ref "FK_dd1df70d0618a55a345349f97cf":"attachments"."id" < "subcategories"."logo_attachment_id" [delete: set null]
+
+Ref "FK_e771023ba9bb027ef4328c0aff2":"users"."id" < "subcategories"."created_by"
+
+Ref "FK_f7b015bc580ae5179ba5a4f42ec":"categories"."id" < "subcategories"."category_id" [delete: cascade]
+
+Ref "FK_62193e7cad0c29598758ad187d0":"accounts"."id" < "suppliers"."account_id" [delete: cascade]
+
+Ref "FK_e56de5f3dcb3c112de1e983b8e7":"users"."id" < "tags"."createdById"
+
+Ref "FK_7252d91dd610730c97d6b58ae79":"branches"."id" < "user_branches"."branch_id"
+
+Ref "FK_a93a8dec13e6204974dd67386ed":"users"."id" < "user_branches"."user_id" [update: cascade, delete: cascade]
+
+Ref "FK_87b8888186ca9769c960e926870":"users"."id" < "user_roles"."user_id" [update: cascade, delete: cascade]
+
+Ref "FK_b23c65e50a758245a33ee35fda1":"roles"."id" < "user_roles"."role_id"
