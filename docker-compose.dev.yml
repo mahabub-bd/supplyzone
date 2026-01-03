@@ -1,0 +1,80 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: supplyzone-nginx-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - supplyzone-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: supplyzone-frontend-dev
+    expose:
+      - "80"
+    networks:
+      - supplyzone-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: supplyzone-backend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: supplyzone_dev
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+    depends_on:
+      - postgres
+    networks:
+      - supplyzone-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: supplyzone-postgres-dev
+    environment:
+      POSTGRES_DB: supplyzone_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - supplyzone-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: supplyzone-pgadmin-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@supplyzone.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - supplyzone-network
+
+volumes:
+  pgdata_dev:
+  pgadmin_data:
+
+networks:
+  supplyzone-network:
+    driver: bridge
