@@ -31,7 +31,7 @@ jobs:
             git pull origin main
 
             echo "🐳 Building & starting containers"
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.yml up -d --build
 
             echo "🧹 Cleaning unused Docker images"
             docker image prune -f
