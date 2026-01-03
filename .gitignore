@@ -1,1 +1,6 @@
 certbot/
+# Environment files (NEVER COMMIT)
+.env
+.env.*
+backend/.env.production
+backend/.env.development
