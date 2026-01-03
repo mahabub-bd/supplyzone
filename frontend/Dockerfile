@@ -22,9 +22,11 @@ RUN pnpm build
 # ----------------- Stage 2: Production -----------------
 FROM nginx:alpine
 
-
 # বিল্ডার স্টেজ থেকে dist ফোল্ডার কপি করা
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# কাস্টম nginx কনফিগারেশন কপি করা
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

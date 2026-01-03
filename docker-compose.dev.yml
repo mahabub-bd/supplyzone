@@ -17,6 +17,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: supplyzone-frontend-dev
+    environment:
+      - NODE_ENV=development
     expose:
       - "80"
     networks:
