@@ -43,7 +43,16 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  app.use(helmet());
+
+  // Configure helmet to allow CORS
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+      contentSecurityPolicy: false, // Disable CSP to avoid blocking API requests
+    }),
+  );
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Smart Sale POS API')
     .setDescription('API documentation for Smart Sale POS System')
