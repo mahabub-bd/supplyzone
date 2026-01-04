@@ -2,7 +2,6 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -44,15 +43,6 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
-  // Configure helmet to allow CORS
-  app.use(
-    helmet({
-      crossOriginEmbedderPolicy: false,
-      crossOriginOpenerPolicy: false,
-      crossOriginResourcePolicy: false,
-      contentSecurityPolicy: false, // Disable CSP to avoid blocking API requests
-    }),
-  );
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Smart Sale POS API')
     .setDescription('API documentation for Smart Sale POS System')
