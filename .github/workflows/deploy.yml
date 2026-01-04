@@ -33,6 +33,13 @@ jobs:
             echo "🐳 Building & starting containers"
             docker compose -f docker-compose.yml up -d --build
 
+            echo "⏳ Waiting for services to be healthy (max 2 minutes)"
+            timeout 120 bash -c 'until docker compose ps | grep -q "supplyzone-frontend.*healthy\|supplyzone-frontend.*running (healthy)"; do sleep 2; done' || echo "⚠️ Frontend health check timeout"
+            timeout 120 bash -c 'until docker compose ps | grep -q "supplyzone-backend.*healthy\|supplyzone-backend.*running (healthy)"; do sleep 2; done' || echo "⚠️ Backend health check timeout"
+
+            echo "📊 Container status:"
+            docker compose ps
+
             echo "🧹 Cleaning unused Docker images"
             docker image prune -f
 
