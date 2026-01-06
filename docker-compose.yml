@@ -10,10 +10,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     depends_on:
-      frontend:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
+      - frontend
+      - backend
     restart: unless-stopped
     networks:
       - supplyzone-network
@@ -23,12 +21,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: supplyzone-frontend
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     restart: unless-stopped
     networks:
       - supplyzone-network
@@ -46,15 +38,8 @@ services:
       DATABASE_NAME: supplyzone_dev
       DATABASE_USER: postgres
       DATABASE_PASSWORD: postgres
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
     depends_on:
-      postgres:
-        condition: service_started
+      - postgres
     restart: unless-stopped
     networks:
       - supplyzone-network
@@ -66,12 +51,6 @@ services:
       POSTGRES_DB: supplyzone_dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     restart: unless-stopped
